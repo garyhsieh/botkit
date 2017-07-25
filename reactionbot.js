@@ -104,21 +104,6 @@ function receivedMessageFromOther(ts, ch, text){
 function startedTyping(ts, ch){
     console.log('**** &&&&& ***** started typing');
 
-    //first clean up previous results
-
-    if(startedTypingResults.length>0){
-        //indexFound = emotionResults.indexOf.timeStamp(ts);
-        for (var i = 0; i < startedTypingResults.length; i++) {
-            console.log('startedTypingResults timestamp: ' + startedTypingResults[i].timeStamp);
-            console.log('last timestamp: ' + LASTMESSAGESENTTIMESTAMP);
-
-            if (startedTypingResults[i].timeStamp < LASTMESSAGESENTTIMESTAMP){
-                console.log('removed from started typing results, timestamp: ' + startedTypingResults[i].timeStamp);
-                startedTypingResults.splice(i, 1);
-           }
-        }
-    }
-
     ioserver.emit('message', {time: ts, channel: ch, text: "", iterations: STARTEDTYPINGITERATIONS});
     console.log('emit: message');
 };
@@ -293,7 +278,7 @@ function addEntry(ts, ch, sc, it) //(timeStamp, channel, scores)
         }
     } else if (it == STARTEDTYPINGITERATIONS) {
 
-        //first check if we already have an entry with the same timeStamp & channel
+/*        //first check if we already have an entry with the same timeStamp & channel
 
         if(startedTypingResults.length>0){
             //indexFound = emotionResults.indexOf.timeStamp(ts);
@@ -306,7 +291,7 @@ function addEntry(ts, ch, sc, it) //(timeStamp, channel, scores)
                     startedTypingResults.splice(i, 1);
                }
             }
-        }
+        }*/
 
         startedTypingResults.push({
             timeStamp: ts,
@@ -320,31 +305,6 @@ function addEntry(ts, ch, sc, it) //(timeStamp, channel, scores)
 }  
 
 var emotionResults = [];
-//array maintenance 
-//check if there are old emotions left around, that didnt reach 10 dataPoints
-//if so, convert to emotion and send
-//remove that data from array
-function maintainResults(msec) //this is the time we will use as threshold
-{
-   var tsNow = new Date().getTime();
-   console.log('in maintainResults function');
-   emotionResults.forEach(function(entry, index){
-        if(entry.timeStamp + msec < tsNow) {
-            //compute & send the emotion
-            computeAndSendEmotion(entry);
-            //remove this result from the array, it is processed.
-            emotionResults.splice(pos, index);
-        }
-   
-   });
-   //this makes the maintenance fucntion call again after the timeout
-   setTimeout(maintainResults, msec); 
-}
-
-// boot up the first call to maintain the array
-//msec=5000 for 5 seconds
-//change the 5000 below if you need this more/less frequent
-//maintainResults(50000);
 
 
 //ToDO: write this function
@@ -409,6 +369,24 @@ function computeAndSendEmotion(emotionEntry) {
 
 //ToDO: write this function
 function setSendEmotion(ts, ch, sc) {
+
+    //first clean up previous results
+
+    if(startedTypingResults.length>0){
+        //indexFound = emotionResults.indexOf.timeStamp(ts);
+        console.log("started typing results length: " + startedTypingResults.length )
+        for (var i = 0; i < startedTypingResults.length; i++) {
+            console.log('count: ' + i);
+            console.log('startedTypingResults timestamp: ' + startedTypingResults[i].timeStamp);
+            console.log('last timestamp: ' + LASTMESSAGESENTTIMESTAMP);
+
+            if (startedTypingResults[i].timeStamp < LASTMESSAGESENTTIMESTAMP){
+                console.log('removed from started typing results, timestamp: ' + startedTypingResults[i].timeStamp);
+                startedTypingResults.splice(i, 1);
+                i = i-1;
+           }
+        }
+    }
     //TODO: pick max of running sum among the emotionEntry.scores.* 
     
     var emotions = {};
