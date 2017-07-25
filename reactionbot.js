@@ -1,12 +1,12 @@
 var Botkit = require('./lib/Botkit.js');
 
-
-var SELFUSERID = '';
 var RECEIVEMESSAGEITERATIONS = '2';
 var STARTEDTYPINGITERATIONS = '5';
 var EMOTIONTHREASHOLD = 0.5;
 var LASTMESSAGESENTTIMESTAMP = 0;
 var LOGFILENAME = "studylog.txt"
+var request = require('./vars.js');
+var SELFUSERID = request.SELFUSERID;
 
 //code to write to file
 fs = require('fs');
@@ -26,7 +26,7 @@ var EMOTION_EMOTICON_HASH = {contempt:'unamused_purple', anger:'angry_purple', d
 
 if (!process.env.token) {
     console.log('Error: Specify token in environment');
-    process.env['token'] = '';
+    process.env['token'] = request.token;
     //process.exit(1);
 //    write_file(Date.now() + ", starting_session");
 }
@@ -103,6 +103,21 @@ function receivedMessageFromOther(ts, ch, text){
 
 function startedTyping(ts, ch){
     console.log('**** &&&&& ***** started typing');
+
+    //first clean up previous results
+
+    if(startedTypingResults.length>0){
+        //indexFound = emotionResults.indexOf.timeStamp(ts);
+        for (var i = 0; i < startedTypingResults.length; i++) {
+            console.log('startedTypingResults timestamp: ' + startedTypingResults[i].timeStamp);
+            console.log('last timestamp: ' + LASTMESSAGESENTTIMESTAMP);
+
+            if (startedTypingResults[i].timeStamp < LASTMESSAGESENTTIMESTAMP){
+                console.log('removed from started typing results, timestamp: ' + startedTypingResults[i].timeStamp);
+                startedTypingResults.splice(i, 1);
+           }
+        }
+    }
 
     ioserver.emit('message', {time: ts, channel: ch, text: "", iterations: STARTEDTYPINGITERATIONS});
     console.log('emit: message');
