@@ -28,7 +28,7 @@ if (!process.env.token) {
     console.log('Error: Specify token in environment');
     process.env['token'] = request.token;
     //process.exit(1); //comment
-    write_file(Date.now() + ", starting_session, "); //comment
+    write_file(Date.now() + ", starting_session, "); 
 }
 
 var Botkit = require('./lib/Botkit.js');
@@ -120,7 +120,7 @@ controller.on('ambient', function(bot, message) {
     console.log('In message_received' + ' ts:' + message.ts + ' channel:' + message.channel + ' type:' + message.type + ' text:' + message.text + ' user: ' + message.user);
     
 
-	//bot.api.reactions.add({                //comment   
+	//bot.api.reactions.add({                   
 	// 		timestamp: message.ts,
 	// 		channel: message.channel,
 	// 		name: 'grinning',
@@ -128,13 +128,13 @@ controller.on('ambient', function(bot, message) {
 	// 		if (err) {
 	// 			bot.botkit.log('Failed to add emoji reaction :(', err);
 	// 		}
-	// 	}); //comment
+	// 	}); 
 	
     if (message.user != SELFUSERID) {
-        write_file(Date.now() + ", message_received, " + message.ts + "," + message.user + "," + message.text +"," + message.channel); //comment: added labels
+        write_file(Date.now() + ", message_received, " + message.ts + "," + message.user + "," + message.text +"," + message.channel); 
         receivedMessageFromOther(message.ts, message.channel, message.text);
     } else {
-        write_file(Date.now() + ", message_sent, " + message.ts + "," + message.user +"," + message.text +"," + message.channel); //comment: added labels
+        write_file(Date.now() + ", message_sent, " + message.ts + "," + message.user +"," + message.text +"," + message.channel); 
         setSendEmotion(message.ts, message.channel, message.text);
     }
 });
@@ -156,7 +156,7 @@ controller.on('message_received', function(bot, message) {
     //  });
     
     if (message.user == SELFUSERID && message.type == 'user_typing') {
-    //    write_file(Date.now() + ", started_typing, " + message.ts +"," + message.channel); //comment
+    //    write_file(Date.now() + ", started_typing, " + message.ts +"," + message.channel); 
         startedTyping(Date.now(), message.channel);
 
         //track expression until the message is sent
@@ -216,7 +216,7 @@ function addEntry(ts, ch, sc, it) //(timeStamp, channel, scores)
     var addedEntry = false;
     console.log('in addEntry function');
     
-    write_file(Date.now() + ", received_emotion_scores, TS: " + ts +", CH: " + ch +", IT: " + it + ", SC: " + sc); //comment
+    write_file(Date.now() + ", received_emotion_scores, TS: " + ts +", CH: " + ch +", IT: " + it + ", SC: " + sc); 
 
     //check if inputs are valid
     if(ts === undefined || ch == undefined || sc == undefined) {
@@ -445,8 +445,7 @@ function setSendEmotion(ts, ch, sc) {
 }
 
 function addReaction(ts, ch, emoticon_name) {
-    write_file(Date.now() + ", adding_reaction, TS: " + ts +", CH: " + ch +", Emoticon_name: " + emoticon_name); //comment
-
+    write_file(Date.now() + ", adding_reaction, TS: " + ts +", CH: " + ch +", Emoticon_name: " + emoticon_name); 
     bot.api.reactions.add({
             timestamp: ts,
             channel: ch,
