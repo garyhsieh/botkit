@@ -4,7 +4,7 @@ var RECEIVEMESSAGEITERATIONS = '2';
 var STARTEDTYPINGITERATIONS = '5';
 var EMOTIONTHREASHOLD = 0.5;
 var LASTMESSAGESENTTIMESTAMP = 0;
-var LOGFILENAME = "studylog.txt"
+var LOGFILENAME = 'studylog.txt'
 var request = require('./vars.js');
 var SELFUSERID = request.SELFUSERID;
 
@@ -12,23 +12,23 @@ var SELFUSERID = request.SELFUSERID;
 fs = require('fs');
 
 function write_file (text) {
-    fs.writeFile(LOGFILENAME, text, function (err, data) {
+    fs.appendFile(LOGFILENAME, text + "\n", function (err, data) {
       if (err) return console.log(err);
       console.log(data);
     });
 }
 
 
-var EMOTION_EMOTICON_HASH = {contempt:'unamused_purple', anger:'angry_purple', disgust:'confounded_purple',fear:'fearful_purple',happiness:'grinning_purple', neutral:'neutral_face_purple', sadness:'slight_frown_purple', surprise:'open_mouth_purple'}
-//var EMOTION_EMOTICON_HASH = {contempt:'unamused_green', anger:'angry_green', disgust:'confounded_green',fear:'fearful_green',happiness:'grinning_green', neutral:'neutral_face_green', sadness:'slight_frown_green', surprise:'open_mouth_green'}
+//var EMOTION_EMOTICON_HASH = {contempt:'unamused_purple', anger:'angry_purple', disgust:'confounded_purple',fear:'fearful_purple',happiness:'grinning_purple', neutral:'neutral_face_purple', sadness:'slight_frown_purple', surprise:'open_mouth_purple'}
+var EMOTION_EMOTICON_HASH = {contempt:'unamused_green', anger:'angry_green', disgust:'confounded_green',fear:'fearful_green',happiness:'grinning_green', neutral:'neutral_face_green', sadness:'slight_frown_green', surprise:'open_mouth_green'}
 
 
 
 if (!process.env.token) {
     console.log('Error: Specify token in environment');
     process.env['token'] = request.token;
-    //process.exit(1);
-//    write_file(Date.now() + ", starting_session");
+    //process.exit(1); //comment
+    write_file(Date.now() + ", starting_session, "); //comment
 }
 
 var Botkit = require('./lib/Botkit.js');
@@ -69,7 +69,7 @@ ioserver.on('connection', function(socket){
             console.log('incoming emote *** ' + data.response);
             var emotionResponse = JSON.parse(data.response);
             if (data.response.code != "RateLimitExceeded" && emotionResponse[0] != undefined) {
-                addEntry(data.time, data.channel, emotionResponse[0].scores, data.iterations);
+                addEntry(data.time, data.channel, JSON.stringify(emotionResponse[0].scores), data.iterations); 
                 console.log('added entry:: '+ 'timeStamp:'+ data.time + 'channel:' + data.channel + 'iterations:' + data.iterations + 'scores:' + emotionResponse[0].scores);
             } 
             else {
@@ -120,7 +120,7 @@ controller.on('ambient', function(bot, message) {
     console.log('In message_received' + ' ts:' + message.ts + ' channel:' + message.channel + ' type:' + message.type + ' text:' + message.text + ' user: ' + message.user);
     
 
-	// bot.api.reactions.add({
+	//bot.api.reactions.add({                //comment   
 	// 		timestamp: message.ts,
 	// 		channel: message.channel,
 	// 		name: 'grinning',
@@ -128,13 +128,13 @@ controller.on('ambient', function(bot, message) {
 	// 		if (err) {
 	// 			bot.botkit.log('Failed to add emoji reaction :(', err);
 	// 		}
-	// 	});
+	// 	}); //comment
 	
     if (message.user != SELFUSERID) {
-//        write_file(Date.now() + ", message_received, " + message.ts + "," + message.user + "," + message.text +"," + message.channel);
+        write_file(Date.now() + ", message_received, " + message.ts + "," + message.user + "," + message.text +"," + message.channel); //comment: added labels
         receivedMessageFromOther(message.ts, message.channel, message.text);
     } else {
-//        write_file(Date.now() + ", message_sent, " + message.ts + "," + message.user +"," + message.text +"," + message.channel);
+        write_file(Date.now() + ", message_sent, " + message.ts + "," + message.user +"," + message.text +"," + message.channel); //comment: added labels
         setSendEmotion(message.ts, message.channel, message.text);
     }
 });
@@ -156,7 +156,7 @@ controller.on('message_received', function(bot, message) {
     //  });
     
     if (message.user == SELFUSERID && message.type == 'user_typing') {
-//        write_file(Date.now() + ", started_typing, " + message.ts +"," + message.channel);
+    //    write_file(Date.now() + ", started_typing, " + message.ts +"," + message.channel); //comment
         startedTyping(Date.now(), message.channel);
 
         //track expression until the message is sent
@@ -216,7 +216,7 @@ function addEntry(ts, ch, sc, it) //(timeStamp, channel, scores)
     var addedEntry = false;
     console.log('in addEntry function');
     
-//    write_file(Date.now() + ", received_emotion_scores, " + ts +"," + ch +"," + it +"," + sc);
+    write_file(Date.now() + ", received_emotion_scores, TS: " + ts +", CH: " + ch +", IT: " + it + ", SC: " + sc); //comment
 
     //check if inputs are valid
     if(ts === undefined || ch == undefined || sc == undefined) {
@@ -445,7 +445,7 @@ function setSendEmotion(ts, ch, sc) {
 }
 
 function addReaction(ts, ch, emoticon_name) {
-//    write_file(Date.now() + ", adding_reaction, " + ts +"," + ch +"," + emoticon_name);
+    write_file(Date.now() + ", adding_reaction, TS: " + ts +", CH: " + ch +", Emoticon_name: " + emoticon_name); //comment
 
     bot.api.reactions.add({
             timestamp: ts,
