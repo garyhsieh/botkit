@@ -1,12 +1,14 @@
 var Botkit = require('./lib/Botkit.js');
 
-var RECEIVEMESSAGEITERATIONS = '2';
+var RECEIVEMESSAGEITERATIONS = '4';
 var STARTEDTYPINGITERATIONS = '5';
 var EMOTIONTHREASHOLD = 0.5;
 var LASTMESSAGESENTTIMESTAMP = 0;
 var LOGFILENAME = 'studylog.txt'
 var request = require('./vars.js');
 var SELFUSERID = request.SELFUSERID;
+var emotionResults = [];
+var startedTypingResults = [];
 
 //code to write to file
 fs = require('fs');
@@ -19,8 +21,8 @@ function write_file (text) {
 }
 
 
-//var EMOTION_EMOTICON_HASH = {contempt:'unamused_purple', anger:'angry_purple', disgust:'confounded_purple',fear:'fearful_purple',happiness:'grinning_purple', neutral:'neutral_face_purple', sadness:'slight_frown_purple', surprise:'open_mouth_purple'}
-var EMOTION_EMOTICON_HASH = {contempt:'unamused_green', anger:'angry_green', disgust:'confounded_green',fear:'fearful_green',happiness:'grinning_green', neutral:'neutral_face_green', sadness:'slight_frown_green', surprise:'open_mouth_green'}
+var EMOTION_EMOTICON_HASH = {contempt:'contempt_purple', anger:'angry_purple', disgust:'disgust_purple',fear:'fearful_purple',happiness:'happy_purple', neutral:'neutral_face_purple', sadness:'sad_purple', surprise:'surprised_purple'}
+//var EMOTION_EMOTICON_HASH = {contempt:'contempt_green', anger:'angry_green', disgust:'disgust_green',fear:'fearful_green',happiness:'happy_green', neutral:'neutral_face_green', sadness:'sad_green', surprise:'surprised_green'}
 
 
 
@@ -60,6 +62,7 @@ httpserver.listen(3001, function(){
 
 
 ioserver.on('connection', function(socket){
+    write_file(Date.now() + ", emotion_client_connected"); 
 	console.log('an emotion client connected');
 	//stubsockets.add(socket);
 	socket.on('emote', function(data) {
@@ -69,11 +72,12 @@ ioserver.on('connection', function(socket){
             console.log('incoming emote *** ' + data.response);
             var emotionResponse = JSON.parse(data.response);
             if (data.response.code != "RateLimitExceeded" && emotionResponse[0] != undefined) {
-                addEntry(data.time, data.channel, JSON.stringify(emotionResponse[0].scores), data.iterations); 
+                addEntry(data.time, data.channel, emotionResponse[0].scores, data.iterations); 
                 console.log('added entry:: '+ 'timeStamp:'+ data.time + 'channel:' + data.channel + 'iterations:' + data.iterations + 'scores:' + emotionResponse[0].scores);
             } 
             else {
                 console.log('RateLimitExceeded!!!')
+                write_file(Date.now() + ", RateLimitExceeded"); 
             }
 
         }
@@ -82,6 +86,7 @@ ioserver.on('connection', function(socket){
     
 	socket.on('disconnect', function(){
 		console.log('emotion client disconnected');
+        write_file(Date.now() + ", emotion_client_disconnected"); 
 		stubsockets.delete(socket);
 	});
 
@@ -205,9 +210,7 @@ controller.hears('ambient', function(bot, message) {
 
 
 //move all code below to the slack_bot
-var emotionResults = [];
 
-var startedTypingResults = [];
 
 // TODO: call addEntry every time there is an emotion dataPoint in the controller handler
 function addEntry(ts, ch, sc, it) //(timeStamp, channel, scores) 
@@ -216,7 +219,7 @@ function addEntry(ts, ch, sc, it) //(timeStamp, channel, scores)
     var addedEntry = false;
     console.log('in addEntry function');
     
-    write_file(Date.now() + ", received_emotion_scores, TS: " + ts +", CH: " + ch +", IT: " + it + ", SC: " + sc); 
+    write_file(Date.now() + ", received_emotion_scores, TS: " + ts +", CH: " + ch +", IT: " + it + ", SC: " + JSON.stringify(sc)); 
 
     //check if inputs are valid
     if(ts === undefined || ch == undefined || sc == undefined) {
@@ -293,13 +296,14 @@ function addEntry(ts, ch, sc, it) //(timeStamp, channel, scores)
             }
         }*/
 
+
         startedTypingResults.push({
             timeStamp: ts,
             channel: ch,
             scores: sc,
             iterations: it   
         });
-
+        
     }
     
 }  
@@ -376,6 +380,8 @@ function setSendEmotion(ts, ch, sc) {
         //indexFound = emotionResults.indexOf.timeStamp(ts);
         console.log("started typing results length: " + startedTypingResults.length )
         for (var i = 0; i < startedTypingResults.length; i++) {
+            console.log('happiness_pre: ' + startedTypingResults[i].scores.happiness);
+
             console.log('count: ' + i);
             console.log('startedTypingResults timestamp: ' + startedTypingResults[i].timeStamp);
             console.log('last timestamp: ' + LASTMESSAGESENTTIMESTAMP);
