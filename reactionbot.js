@@ -136,10 +136,10 @@ controller.on('ambient', function(bot, message) {
 	// 	}); 
 	
     if (message.user != SELFUSERID) {
-        write_file(Date.now() + ", message_received, " + message.ts + "," + message.user + "," + message.text +"," + message.channel); 
+        write_file(Date.now() + ", message_received, TS: " + message.ts + ", User: " + message.user + ", Text: " + message.text +", Channel: " + message.channel); 
         receivedMessageFromOther(message.ts, message.channel, message.text);
     } else {
-        write_file(Date.now() + ", message_sent, " + message.ts + "," + message.user +"," + message.text +"," + message.channel); 
+        write_file(Date.now() + ", message_sent, TS: " + message.ts + ", User: " + message.user +", Text: " + message.text +", Channel: " + message.channel); 
         setSendEmotion(message.ts, message.channel, message.text);
     }
 });
