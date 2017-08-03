@@ -16,7 +16,7 @@ fs = require('fs');
 function write_file (text) {
     fs.appendFile(LOGFILENAME, text + "\n", function (err, data) {
       if (err) return console.log(err);
-      console.log(data);
+      //console.log(data);
     });
 }
 
@@ -63,7 +63,7 @@ httpserver.listen(3001, function(){
 
 ioserver.on('connection', function(socket){
     write_file(Date.now() + ", emotion_client_connected"); 
-	console.log('an emotion client connected');
+	//console.log('an emotion client connected');
 	//stubsockets.add(socket);
 	socket.on('emote', function(data) {
         //parse Json data
@@ -73,10 +73,10 @@ ioserver.on('connection', function(socket){
             var emotionResponse = JSON.parse(data.response);
             if (data.response.code != "RateLimitExceeded" && emotionResponse[0] != undefined) {
                 addEntry(data.time, data.channel, emotionResponse[0].scores, data.iterations); 
-                console.log('added entry:: '+ 'timeStamp:'+ data.time + 'channel:' + data.channel + 'iterations:' + data.iterations + 'scores:' + emotionResponse[0].scores);
+                //console.log('added entry:: '+ 'timeStamp:'+ data.time + 'channel:' + data.channel + 'iterations:' + data.iterations + 'scores:' + emotionResponse[0].scores);
             } 
             else {
-                console.log('RateLimitExceeded!!!')
+                //console.log('RateLimitExceeded!!!')
                 write_file(Date.now() + ", RateLimitExceeded"); 
             }
 
@@ -85,7 +85,7 @@ ioserver.on('connection', function(socket){
 
     
 	socket.on('disconnect', function(){
-		console.log('emotion client disconnected');
+		//console.log('emotion client disconnected');
         write_file(Date.now() + ", emotion_client_disconnected"); 
 		stubsockets.delete(socket);
 	});
