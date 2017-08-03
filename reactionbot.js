@@ -21,10 +21,12 @@ function write_file (text) {
 }
 
 
-var EMOTION_EMOTICON_HASH = {contempt:'contempt_purple', anger:'angry_purple', disgust:'disgust_purple',fear:'fearful_purple',happiness:'happy_purple', neutral:'neutral_face_purple', sadness:'sad_purple', surprise:'surprised_purple'}
-//var EMOTION_EMOTICON_HASH = {contempt:'contempt_green', anger:'angry_green', disgust:'disgust_green',fear:'fearful_green',happiness:'happy_green', neutral:'neutral_face_green', sadness:'sad_green', surprise:'surprised_green'}
-
-
+if (request.token === request.purple) {
+    var EMOTION_EMOTICON_HASH = {contempt:'contempt_purple', anger:'angry_purple', disgust:'disgust_purple',fear:'fearful_purple',happiness:'happy_purple', neutral:'neutral_face_purple', sadness:'sad_purple', surprise:'surprised_purple'}
+}
+if (request.token === request.green) {
+    var EMOTION_EMOTICON_HASH = {contempt:'contempt_green', anger:'angry_green', disgust:'disgust_green',fear:'fearful_green',happiness:'happy_green', neutral:'neutral_face_green', sadness:'sad_green', surprise:'surprised_green'}
+}
 
 if (!process.env.token) {
     console.log('Error: Specify token in environment');
