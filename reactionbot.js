@@ -453,16 +453,17 @@ function setSendEmotion(ts, ch, sc) {
 }
 
 function addReaction(ts, ch, emoticon_name) {
-    write_file(Date.now() + ", adding_reaction, TS: " + ts +", CH: " + ch +", Emoticon_name: " + emoticon_name); 
-    bot.api.reactions.add({
-            timestamp: ts,
-            channel: ch,
-            name: emoticon_name,
-        }, function(err, res) {
-            if (err) {
-                bot.botkit.log('Failed to add emoji reaction :(', err);
-            }
+    if (request.flag === true) {
+        write_file(Date.now() + ", adding_reaction, TS: " + ts +", CH: " + ch +", Emoticon_name: " + emoticon_name);  
+        bot.api.reactions.add({
+                timestamp: ts,
+                channel: ch,
+                name: emoticon_name,
+         }, function(err, res) {
+                if (err) {
+                    bot.botkit.log('Failed to add emoji reaction :(', err);
+                }
         
-     });
-
+        });
+    }
 }
