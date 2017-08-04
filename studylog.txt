@@ -1,1 +1,0 @@
-1500915494229, received_emotion_scores, 1500915488983C38BNFVTK5[object Object]
