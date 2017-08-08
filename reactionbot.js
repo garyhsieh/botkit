@@ -163,7 +163,7 @@ controller.on('message_received', function(bot, message) {
     //  });
     
     if (message.user == SELFUSERID && message.type == 'user_typing') {
-    //    write_file(Date.now() + ", started_typing, " + message.ts +"," + message.channel); 
+        write_file("Date_Now " + Date.now() + ", started_typing, TS: " + message.ts +", CH: " + message.channel); 
         startedTyping(Date.now(), message.channel);
 
         //track expression until the message is sent
